@@ -14,7 +14,7 @@ namespace OldFerndale
         public override string ID => "OldFerndale";
         public override string Name => "Old Ferndale";
         public override string Author => "アカツキ(Akatsuki)";
-        public override string Version => "1.1.0";
+        public override string Version => "1.2";
         public override string Description => "Old Ferndale mod for My Summer Car.";
 
         private SettingsSliderInt oldSkin;
