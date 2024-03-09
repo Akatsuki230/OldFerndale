@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using System.Text;
+﻿using System.Reflection;
 using HutongGames.PlayMaker.Actions;
 using MSCLoader;
 using UnityEngine;
@@ -14,13 +10,12 @@ namespace OldFerndale
         public override string ID => "OldFerndale";
         public override string Name => "Old Ferndale";
         public override string Author => "アカツキ(Akatsuki)";
-        public override string Version => "1.2";
+        public override string Version => "1.3";
         public override string Description => "Old Ferndale mod for My Summer Car.";
 
         private SettingsSliderInt oldSkin;
         private SettingsSliderInt oldWheels;
         private SettingsSliderInt tachometer;
-        private SettingsSliderInt interior;
         private SettingsCheckBox removeScoop;
         private SettingsCheckBox oldEngine;
         private SettingsCheckBox removeLinelockButton;
@@ -39,17 +34,17 @@ namespace OldFerndale
         public override void ModSettings()
         {
             base.ModSettings();
-            oldSkin = Settings.AddSlider(this, "skin", "Skin", 0, 4, 1, textValues: new string[] { "Leave as is", "2016", "build 178", "Red", "Blue" });
-            oldWheels = Settings.AddSlider(this, "oldWheels", "Old Wheels", 0, 2, 1, textValues: new string[] { "No change", "Wheels from 2016", "Wheels from Build 178" });
-            tachometer = Settings.AddSlider(this, "tachometer", "Tachometer", 0, 2, 1, textValues: new string[] { "Unchanged", "Old", "Remove" });
+            oldSkin = Settings.AddSlider(this, "skin", "Skin", 0, 4, 1, textValues: new[] { "Leave as is", "2016", "build 178", "Red", "Blue" });
+            oldWheels = Settings.AddSlider(this, "oldWheels", "Old Wheels", 0, 3, 1, textValues: new[] { "No change", "Wheels from 2016", "Wheels from Build 178", "Build <176" });
+            tachometer = Settings.AddSlider(this, "tachometer", "Tachometer", 0, 2, 1, textValues: new[] { "Unchanged", "Old", "Remove" });
             removeScoop = Settings.AddCheckBox(this, "removeScoop", "Remove Scoop", true);
             oldEngine = Settings.AddCheckBox(this, "oldEngine", "Old Engine", true);
             removeLinelockButton = Settings.AddCheckBox(this, "linelock", "Remove Linelock Button", true);
             removeMudflaps = Settings.AddCheckBox(this, "removeMudflaps", "Remove Mudflaps", true);
             oldSuspension = Settings.AddCheckBox(this, "oldSuspension", "Old Suspension", true);
             removeRearAxle = Settings.AddCheckBox(this, "removeRearAxle", "Remove Rear Axle", true);
-            redInterior = Settings.AddCheckBox(this, "redInterior", "Red Interior", false);
-            oldLicensePlate = Settings.AddCheckBox(this, "oldLicPlate", "Old License Plate", false);
+            redInterior = Settings.AddCheckBox(this, "redInterior", "Red Interior");
+            oldLicensePlate = Settings.AddCheckBox(this, "oldLicPlate", "Old License Plate");
 
             Settings.AddButton(this, "Suggest new features", () =>
             {
@@ -128,7 +123,6 @@ namespace OldFerndale
 
                         var bootlid = GameObject.Find("FERNDALE(1630kg)/Bootlid/Bootlid/muscle_bootlid");
                         bootlid.GetComponent<Renderer>().material = texture;
-                        break;
                     }
                     break;
             }
@@ -206,15 +200,23 @@ namespace OldFerndale
 
             if (removeMudflaps.GetValue())
             {                
-                var chassis = GameObject.Find("FERNDALE(1630kg)")
+                GameObject.Find("FERNDALE(1630kg)")
                     .transform
                     .GetChild(1)
                     .GetChild(14)
                     .GetChild(6)
+                    .gameObject
+                    .SetActive(false);
+
+                var chassis = GameObject.Find("FERNDALE(1630kg)")
+                    .transform
+                    .GetChild(1)
+                    .GetChild(14)
+                    .GetChild(0)
                     .gameObject;
 
                 chassis.GetComponent<MeshFilter>().sharedMesh = resource.LoadAsset<Mesh>("muscle_chassis");
-                chassis.GetComponent<Renderer>().materials = new Material[1] { new Material(Shader.Find("Diffuse")) { color = Color.white } };
+                // chassis.GetComponent<Renderer>().materials = new Material[1] { new Material(Shader.Find("Diffuse")) { color = Color.white } };
             }
 
             if (oldSuspension.GetValue())
@@ -361,7 +363,7 @@ namespace OldFerndale
                 wheelRR.GetComponent<MeshFilter>().mesh = rearMesh;
             }
 
-            if (oldWheels.GetValue() == 2)
+            else if (oldWheels.GetValue() == 2)
             {
                 var mesh = resource.LoadAsset<Mesh>("rim_old_1");
 
@@ -404,6 +406,80 @@ namespace OldFerndale
                 wheelRR.GetComponent<MeshFilter>().mesh = mesh;
             }
 
+            else if (oldWheels.GetValue() == 3)
+            {
+                var innerMesh = resource.LoadAsset<Mesh>("drag_rim_inner3");
+                var outerMesh = resource.LoadAsset<Mesh>("drag_rim_outer");
+
+                var wheelFL = GameObject.Find("FERNDALE(1630kg)")
+                    .transform
+                    .GetChild(13)
+                    .GetChild(1)
+                    .GetChild(0)
+                    .GetChild(1);
+
+                var wheelFR = GameObject.Find("FERNDALE(1630kg)")
+                    .transform
+                    .GetChild(14)
+                    .GetChild(1)
+                    .GetChild(0)
+                    .GetChild(2);
+
+                // FRONT LEFT
+                wheelFL.GetChild(0).GetComponent<MeshFilter>().mesh = innerMesh;
+                wheelFL.GetChild(0).localPosition = new Vector3(0f, 0f, 0f);
+                wheelFL.GetChild(0).localRotation = Quaternion.Euler(0f, 180f, 0f);
+                wheelFL.GetChild(0).localScale = new Vector3(1f, 1f, 1f);
+                wheelFL.GetComponent<MeshFilter>().mesh = outerMesh;
+                wheelFL.localPosition = new Vector3(-0.015f, 0f, 0f);
+                wheelFL.localRotation = Quaternion.Euler(0f, 180f, 0f);
+                wheelFL.localScale = new Vector3(1.1f, 1.1f, 1.1f);
+
+                // FRONT RIGHT
+                wheelFR.GetChild(0).GetComponent<MeshFilter>().mesh = innerMesh;
+                wheelFR.GetChild(0).localPosition = new Vector3(0f, 0f, 0f);
+                wheelFR.GetChild(0).localRotation = Quaternion.Euler(0f, 0f, 0f);
+                wheelFR.GetChild(0).localScale = new Vector3(1f, 1f, 1f);
+                wheelFR.GetComponent<MeshFilter>().mesh = outerMesh;
+                wheelFR.localPosition = new Vector3(-0.015f, 0f, 0f);
+                wheelFR.localRotation = Quaternion.Euler(0f, 0f, 0f);
+                wheelFR.localScale = new Vector3(1.1f, 1.1f, 1.1f);
+
+                var wheelRL = GameObject.Find("FERNDALE(1630kg)")
+                    .transform
+                    .GetChild(15)
+                    .GetChild(1)
+                    .GetChild(0)
+                    .GetChild(1);
+
+                var wheelRR = GameObject.Find("FERNDALE(1630kg)")
+                    .transform
+                    .GetChild(16)
+                    .GetChild(1)
+                    .GetChild(0)
+                    .GetChild(1);
+
+                // REAR LEFT
+                wheelRL.GetChild(0).GetComponent<MeshFilter>().mesh = innerMesh;
+                wheelRL.GetChild(0).localPosition = new Vector3(0f, 0f, 0f);
+                wheelRL.GetChild(0).localRotation = Quaternion.Euler(0, 0, 0);
+                wheelRL.GetChild(0).localScale = new Vector3(1f, 1f, 1f);
+                wheelRL.GetComponent<MeshFilter>().mesh = outerMesh;
+                wheelRL.localPosition = new Vector3(-0.015f, 0f, 0f);
+                wheelRL.localRotation = Quaternion.Euler(0, 0, 0);
+                wheelRL.localScale = new Vector3(1.1f, 1.1f, 1.1f);
+
+                // REAR RIGHT
+                wheelRR.GetChild(0).GetComponent<MeshFilter>().mesh = innerMesh;
+                wheelRR.GetChild(0).localPosition = new Vector3(0f, 0f, 0f);
+                wheelRR.GetChild(0).localRotation = Quaternion.Euler(0, 0, 0);
+                wheelRR.GetChild(0).localScale = new Vector3(1f, 1f, 1f);
+                wheelRR.GetComponent<MeshFilter>().mesh = outerMesh;
+                wheelRR.localPosition = new Vector3(-0.015f, 0f, 0f);
+                wheelRR.localRotation = Quaternion.Euler(0, 0, 0);
+                wheelRR.localScale = new Vector3(1.1f, 1.1f, 1.1f);
+            }
+
             if (tachometer.GetValue() == 1)
             {
                 var tachometer = GameObject.Find("FERNDALE(1630kg)")
@@ -437,7 +513,7 @@ namespace OldFerndale
                 needle.transform.localScale = Vector3.one;
             }
 
-            if (tachometer.GetValue() == 2)
+            else if (tachometer.GetValue() == 2)
             {
                 GameObject.Find("FERNDALE(1630kg)")
                     .transform
