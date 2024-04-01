@@ -1,9 +1,9 @@
-﻿using System.Reflection;
+﻿using System;
+using System.Reflection;
 using JetBrains.Annotations;
 using MSCLoader;
 using OldFerndale.Features;
 using UnityEngine;
-using Debug = System.Diagnostics.Debug;
 
 // ReSharper disable MemberCanBePrivate.Global
 
@@ -29,6 +29,8 @@ namespace OldFerndale
         internal SettingsCheckBox SettingOldSuspension;
         internal SettingsCheckBox SettingRemoveRearAxle;
         internal SettingsCheckBox SettingRedInterior;
+        internal SettingsCheckBox SettingRemoveYellowBarOnAxle;
+        internal SettingsCheckBox SettingOldRearWheelsSize;
 
         public override void ModSetup()
         {
@@ -55,6 +57,8 @@ namespace OldFerndale
             SettingRemoveRearAxle = Settings.AddCheckBox(this, "removeRearAxle", "Remove Rear Axle", true);
             SettingRedInterior = Settings.AddCheckBox(this, "redInterior", "Red Interior");
             SettingOldLicensePlate = Settings.AddCheckBox(this, "oldLicPlate", "Old License Plate");
+            SettingRemoveYellowBarOnAxle = Settings.AddCheckBox(this, "removeYellowBarOnAxle", "Remove Yellow Bar on Axle");
+            SettingOldRearWheelsSize = Settings.AddCheckBox(this, "oldRearWheelsSize", "Old Rear Wheels Size");
 
             Settings.AddButton(this, "Suggest new features",
                 () =>
@@ -78,13 +82,15 @@ namespace OldFerndale
             OldEngine.ApplyOldEngine(SettingOldEngine);
             RemoveLinelock.ApplyRemoveLinelock(SettingRemoveLinelockButton);
             OldLicensePlate.ApplyOldLicensePlate(SettingOldLicensePlate);
-            RemoveMudflaps.ApplyRemoveMudflaps(resource, SettingRemoveMudflaps);
+            RemoveMudflaps.ApplyRemoveMudflaps(resource, SettingRemoveMudflaps, SettingRemoveYellowBarOnAxle);
             OldSuspension.ApplyOldSuspension(SettingOldSuspension);
             OldRims.ApplyOldRims(resource, SettingOldWheels);
             OldTachometer.ApplyOldTachometer(resource, SettingTachometer);
             RemoveRearAxle.ApplyRemoveRearAxle(SettingRemoveRearAxle);
             RedInterior.ApplyRedInterior(resource, SettingRedInterior);
-
+            RemoveYellowBars.ApplyRemoveYellowBars(resource, SettingRemoveYellowBarOnAxle, SettingRemoveMudflaps);
+            OldRearWheelsSize.ApplyOldRearWheelsSize(SettingOldRearWheelsSize);
+            
             resource.Unload(false);
         }
 
@@ -95,7 +101,7 @@ namespace OldFerndale
             using (var stream = Assembly.GetExecutingAssembly()
                        .GetManifestResourceStream("OldFerndale.Resources.oldferndale.unity3d"))
             {
-                Debug.Assert(stream != null, nameof(stream) + " != null");
+                if (stream == null) throw new Exception("Could not load resource");
                 data = new byte[stream.Length];
                 _ = stream.Read(data, 0, data.Length);
             }

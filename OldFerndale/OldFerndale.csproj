@@ -12,10 +12,11 @@
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
+    <RunPostBuildEvent>OnOutputUpdated</RunPostBuildEvent>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
+    <DebugSymbols>false</DebugSymbols>
+    <DebugType>none</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>bin\Debug\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
@@ -61,6 +62,7 @@
   <ItemGroup>
     <Compile Include="Features\OldEngine.cs" />
     <Compile Include="Features\OldLicensePlate.cs" />
+    <Compile Include="Features\OldRearWheelsSize.cs" />
     <Compile Include="Features\OldRims.cs" />
     <Compile Include="Features\OldSkin.cs" />
     <Compile Include="Features\OldSuspension.cs" />
@@ -70,6 +72,7 @@
     <Compile Include="Features\RemoveMudflaps.cs" />
     <Compile Include="Features\RemoveRearAxle.cs" />
     <Compile Include="Features\RemoveScoop.cs" />
+    <Compile Include="Features\RemoveYellowBars.cs" />
     <Compile Include="OldFerndaleMod.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
