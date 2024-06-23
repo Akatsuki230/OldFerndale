@@ -1,0 +1,7 @@
+/Assets/Building/AssetBundles/
+*.meta
+/Library/
+/ProjectSettings/
+/Temp/
+/.idea/
+/sync.ffs_db
